@@ -1,0 +1,133 @@
+/* ── Design tokens ─────────────────────────────────────────────────────────
+   "Glass cockpit": frosted translucent panels, hairline borders, instrument
+   readouts in mono. Night = flight deck at cruise; Day = white instrument panel. */
+:root {
+  --font-ui: 'Barlow', system-ui, sans-serif;
+  --font-cond: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  --bg0: #dce4ed;
+  --bg1: #f1f4f8;
+  --glass: rgba(255, 255, 255, 0.74);
+  --glass-strong: rgba(255, 255, 255, 0.94);
+  --well: rgba(15, 35, 60, 0.045);
+  --well-strong: rgba(15, 35, 60, 0.08);
+  --edge: rgba(15, 35, 60, 0.12);
+  --edge-strong: rgba(15, 35, 60, 0.24);
+  --text: #0f1b2b;
+  --muted: #5a6a7e;
+  --dim: #93a1b2;
+  --accent: #0a7fc0;
+  --accent-soft: rgba(10, 127, 192, 0.12);
+  --accent-ink: #ffffff;
+  --amber: #c27400;
+  --good: #0f9a63;
+  --bad: #d33a4b;
+  --shadow: 0 10px 30px rgba(20, 40, 70, 0.12), 0 1px 2px rgba(20, 40, 70, 0.08);
+  --glow: none;
+  --overlay: rgba(220, 228, 237, 0.55);
+  --livery: #4fd1ff;
+
+  --radius: 10px;
+  --radius-sm: 6px;
+  --blur: blur(16px) saturate(140%);
+  color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+  --bg0: #03060c;
+  --bg1: #0a1524;
+  --glass: rgba(9, 17, 29, 0.7);
+  --glass-strong: rgba(8, 14, 25, 0.92);
+  --well: rgba(150, 200, 255, 0.045);
+  --well-strong: rgba(150, 200, 255, 0.09);
+  --edge: rgba(140, 190, 255, 0.13);
+  --edge-strong: rgba(140, 190, 255, 0.28);
+  --text: #dde7f2;
+  --muted: #7f8fa5;
+  --dim: #4d5c70;
+  --accent: #4fd1ff;
+  --accent-soft: rgba(79, 209, 255, 0.12);
+  --accent-ink: #03131c;
+  --amber: #ffb547;
+  --good: #3ddc97;
+  --bad: #ff5d6c;
+  --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --glow: 0 0 14px rgba(79, 209, 255, 0.35);
+  --overlay: rgba(2, 5, 10, 0.6);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg0);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: 14.5px;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#app { position: fixed; inset: 0; }
+
+.ico { display: block; flex: none; }
+.ico-wrap { display: inline-grid; place-items: center; line-height: 0; }
+
+/* the space behind the globe */
+.sky {
+  position: absolute;
+  inset: 0;
+  z-index: 0; /* own stacking context: CSS2D labels set z-index and must stay under the UI */
+  background: radial-gradient(ellipse at 50% 45%, var(--bg1), var(--bg0) 75%);
+}
+.sky canvas { display: block; touch-action: none; }
+.sky-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--edge) 1px, transparent 1px) 0 0 / 80px 80px,
+    linear-gradient(90deg, var(--edge) 1px, transparent 1px) 0 0 / 80px 80px;
+  opacity: 0.35;
+  mask-image: radial-gradient(ellipse at center, transparent 30%, #000 85%);
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 30%, #000 85%);
+}
+
+.globe-labels { position: absolute; inset: 0; pointer-events: none; }
+.globe-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--glass-strong);
+  border: 1px solid var(--edge-strong);
+  color: var(--text);
+  transform: translateY(-14px);
+  white-space: nowrap;
+}
+.globe-label.owned { border-color: var(--accent); color: var(--accent); }
+.globe-label.selected { border-color: var(--amber); color: var(--amber); }
+
+.ui { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.ui > * { pointer-events: auto; }
+
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: var(--edge-strong); border-radius: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+.pos { color: var(--good); }
+.neg { color: var(--bad); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
