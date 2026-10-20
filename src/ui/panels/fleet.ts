@@ -15,6 +15,7 @@ import { report } from '../toast';
 import { ui } from '../uiState';
 import { act, empty, stat, refreshPanel } from './common';
 import type { Panel } from './types';
+import { openCrewPicker } from './crewPicker';
 
 export const fleetPanel: Panel = {
   id: 'fleet', title: 'Your Fleet', short: 'Fleet', icon: 'fleet', color: '#219ebc', key: 'F',
@@ -76,11 +77,9 @@ function statusLine(p: Plane): HTMLElement {
 }
 
 function crewRow(p: Plane, role: Staff['role']): HTMLElement {
-  const s = S();
   const { pilots, attendants } = crewFor(p.id);
   const list = role === 'pilot' ? pilots : attendants;
   const need = role === 'pilot' ? PILOTS_PER_PLANE : attendantsNeeded(MODEL_BY_ID[p.modelId]);
-  const free = s.staff.filter((x) => x.role === role && !x.planeId).sort((a, b) => b.level - a.level);
   const locked = p.status === 'flying';
 
   return h('div.crew-row',
@@ -92,14 +91,9 @@ function crewRow(p: Plane, role: Staff['role']): HTMLElement {
           !locked && h('button.chip-x', { onclick: act(() => assignStaff(st.id, null)), title: 'Unassign' }, '×'),
         ),
       ),
-      list.length < need && !locked && (free.length
-        ? h('select.mini-select', {
-            onchange: (e: Event) => report(assignStaff((e.target as HTMLSelectElement).value, p.id)),
-          },
-            h('option', { value: '' }, role === 'pilot' ? '+ Add pilot' : '+ Add attendant'),
-            free.map((st) => h('option', { value: st.id }, `L${st.level} ${st.name}${st.status !== 'ready' ? ` (${st.status})` : ''}`)),
-          )
-        : h('button.link', { onclick: () => bus.emit('openPanel', 'crew') }, '+ hire')),
+      list.length < need && !locked &&
+        h('button.btn.small.add-crew', { onclick: () => openCrewPicker(p.id, role) },
+          role === 'pilot' ? '+ Add pilot' : '+ Add attendant'),
     ),
   );
 }

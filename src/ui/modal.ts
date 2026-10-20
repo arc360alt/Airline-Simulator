@@ -2,12 +2,16 @@ import { h } from './dom';
 import { settings } from '../game/state';
 import { money } from './format';
 
-export function openModal(content: HTMLElement, opts: { dismissable?: boolean; wide?: boolean } = {}): () => void {
+export function openModal(content: HTMLElement, opts: { dismissable?: boolean; wide?: boolean; onClose?: () => void } = {}): () => void {
   const backdrop = h('div.modal-backdrop');
   const card = h(`div.modal${opts.wide ? '.wide' : ''}`, content);
   backdrop.appendChild(card);
   document.body.appendChild(backdrop);
+  let closed = false;
   const close = () => {
+    if (closed) return;
+    closed = true;
+    opts.onClose?.();
     backdrop.classList.add('out');
     setTimeout(() => backdrop.remove(), 200);
     window.removeEventListener('keydown', onKey);

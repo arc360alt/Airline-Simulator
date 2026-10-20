@@ -116,6 +116,8 @@ export function mountShell(root: HTMLElement): void {
 
   window.addEventListener('keydown', (e) => {
     if ((e.target as HTMLElement).closest('input, textarea, select')) return;
+    // a popup on top (picker, confirm dialog) gets Esc first; only close the panel when none is open
+    if (document.querySelector('.modal-backdrop')) return;
     if (e.key === 'Escape' && ui.open) openPanel(null);
     const p = PANELS.find((x) => x.key.toLowerCase() === e.key.toLowerCase());
     if (p && !e.metaKey && !e.ctrlKey) openPanel(p.id);
